@@ -195,12 +195,24 @@ class BedrockBackend:
     def generate(self, model: str, prompt: str, tools: list) -> dict:
         # strip the internal intent marker before sending to the real model
         clean = prompt.split("[[intent:", 1)[0].strip()
-        resp = self.client.converse(
+        kwargs = dict(
             modelId=model,
             messages=[{"role": "user", "content": [{"text": clean}]}],
             toolConfig={"tools": tools},
-            inferenceConfig={"maxTokens": 512, "temperature": 0.7},
+            inferenceConfig={"maxTokens": 512},
         )
+        try:
+            resp = self.client.converse(**kwargs)
+        except Exception as e:
+            # Some newer models reject certain inference params (e.g. Opus 4.8
+            # deprecates `temperature`). Retry once with no inferenceConfig
+            # before giving up, so one model's quirk never crashes the run.
+            msg = str(e)
+            if "ValidationException" in type(e).__name__ or "deprecated" in msg:
+                kwargs.pop("inferenceConfig", None)
+                resp = self.client.converse(**kwargs)
+            else:
+                raise
         invs = []
         for block in resp.get("output", {}).get("message", {}).get("content", []):
             if "toolUse" in block:

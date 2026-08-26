@@ -104,7 +104,12 @@ def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict
         hallucinations = 0
         transcript = []
         for probe in probes:
-            resp = client.call(model, probe["prompt"], tools)
+            try:
+                resp = client.call(model, probe["prompt"], tools)
+            except Exception as e:
+                emitted_classes.append("api_error")
+                transcript.append({"probe": probe["class"], "error": f"{type(e).__name__}: {str(e)[:160]}"})
+                continue
             if not resp.invocations:
                 emitted_classes.append("no_call")
                 transcript.append({"probe": probe["class"], "emitted": None})
