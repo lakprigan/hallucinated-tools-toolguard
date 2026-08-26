@@ -1,0 +1,25 @@
+# Paper source & build artifacts (kept out of the code repo)
+*.tex
+*.pdf
+*.bib
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+
+# LLM response cache (regenerated; may contain transcripts) -- anywhere
+**/llm_cache/
+toolguard/results/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# OS
+.DS_Store

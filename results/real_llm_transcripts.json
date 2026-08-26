@@ -1,0 +1,727 @@
+{
+  "mock-opus": [
+    {
+      "probe": "honest",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "cal_op_057",
+      "emitted_args": {
+        "cal_id": "cal_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "wipe_disk",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "file_op_008",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "n": 0,
+        "mode": "a"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "file_op_008",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "n": "not_valid",
+        "mode": "a"
+      },
+      "classified": "H3_type_violation",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "mock-sonnet": [
+    {
+      "probe": "honest",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "refund_customer",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "cal_op_021s",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "title_val",
+        "day": 1
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "cal_op_021",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "file_op_008",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "n": 0,
+        "mode": "a"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "mock-haiku": [
+    {
+      "probe": "honest",
+      "emitted_name": "cal_op_024",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "refund_customer",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "grant_admin",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "title_val",
+        "day": 1,
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "cal_op_057",
+      "emitted_args": {
+        "cal_id": "cal_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val",
+        "__override": "not_valid"
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "cal_op_057",
+      "emitted_args": {
+        "cal_id": "cal_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "cal_op_057",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val"
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    }
+  ],
+  "mock-nova-premier": [
+    {
+      "probe": "honest",
+      "emitted_name": "cal_op_024",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "file_op_008",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "n": 0,
+        "mode": "a"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "title_val",
+        "day": 1
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "mock-nova-lite": [
+    {
+      "probe": "honest",
+      "emitted_name": "cal_op_024",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "grant_admin",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "refund_customer",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "cal_op_057",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "file_id_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "cal_op_021",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": "not_valid"
+      },
+      "classified": "H3_type_violation",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "cal_op_021",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "title_val",
+        "day": 1
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "file_id": "file_id_val"
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    }
+  ],
+  "mock-gpt-oss-120b": [
+    {
+      "probe": "honest",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "cal_op_021",
+      "emitted_args": {
+        "cal_id": "cal_id_val",
+        "n": 0
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "grant_admin",
+      "emitted_args": {
+        "x": "y"
+      },
+      "classified": "H1_nonexistent",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val",
+        "__override": true
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "title_val",
+        "day": "not_valid"
+      },
+      "classified": "H3_type_violation",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "account_val",
+        "amount": 1,
+        "currency": "EUR"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "to_val",
+        "subject": "subject_val",
+        "body": "body_val"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "path_val"
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ]
+}

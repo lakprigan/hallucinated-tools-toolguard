@@ -1,0 +1,132 @@
+{
+  "config": {
+    "n_trials": 400,
+    "n_tools": 100,
+    "seed": 20260617,
+    "n_high_risk": 22
+  },
+  "classes": [
+    "H1_nonexistent",
+    "H2_hallucinated_arg",
+    "H3_type_violation",
+    "H4_off_frontier",
+    "H5_borrowed_signature"
+  ],
+  "pipelines": [
+    "no_defense",
+    "racg_only",
+    "racg_cguard",
+    "resolution_only",
+    "toolguard_full"
+  ],
+  "attack_success": {
+    "no_defense": {
+      "H1_nonexistent": 1.0,
+      "H2_hallucinated_arg": 1.0,
+      "H3_type_violation": 1.0,
+      "H4_off_frontier": 1.0,
+      "H5_borrowed_signature": 1.0
+    },
+    "racg_only": {
+      "H1_nonexistent": 1.0,
+      "H2_hallucinated_arg": 1.0,
+      "H3_type_violation": 1.0,
+      "H4_off_frontier": 0.0,
+      "H5_borrowed_signature": 1.0
+    },
+    "racg_cguard": {
+      "H1_nonexistent": 1.0,
+      "H2_hallucinated_arg": 1.0,
+      "H3_type_violation": 1.0,
+      "H4_off_frontier": 0.0,
+      "H5_borrowed_signature": 1.0
+    },
+    "resolution_only": {
+      "H1_nonexistent": 0.0,
+      "H2_hallucinated_arg": 0.0,
+      "H3_type_violation": 0.0,
+      "H4_off_frontier": 1.0,
+      "H5_borrowed_signature": 0.1525
+    },
+    "toolguard_full": {
+      "H1_nonexistent": 0.0,
+      "H2_hallucinated_arg": 0.0,
+      "H3_type_violation": 0.0,
+      "H4_off_frontier": 0.0,
+      "H5_borrowed_signature": 0.1525
+    }
+  },
+  "honest_rejection": {
+    "no_defense": 0.0,
+    "racg_only": 0.0,
+    "racg_cguard": 0.0,
+    "resolution_only": 0.0,
+    "toolguard_full": 0.0
+  },
+  "h5_residue": {
+    "passed_resolution": 66,
+    "of_which_schema_valid": 66,
+    "residue_rate": 0.165,
+    "residue_is_all_schema_valid": true
+  },
+  "hypotheses": [
+    {
+      "id": "H-A",
+      "statement": "Prior ContractGuard/RACG stack leaks hallucinated tools & arguments (H1-H3,H5).",
+      "pass": true,
+      "evidence": {
+        "H1_nonexistent": 1.0,
+        "H2_hallucinated_arg": 1.0,
+        "H3_type_violation": 1.0,
+        "H5_borrowed_signature": 1.0
+      }
+    },
+    {
+      "id": "H-B",
+      "statement": "RACG alone rejects off-frontier real tools (H4).",
+      "pass": true,
+      "evidence": {
+        "racg_only.H4": 0.0
+      }
+    },
+    {
+      "id": "H-C",
+      "statement": "Resolution Rung alone rejects all schema-detectable hallucinations (H1-H3).",
+      "pass": true,
+      "evidence": {
+        "H1_nonexistent": 0.0,
+        "H2_hallucinated_arg": 0.0,
+        "H3_type_violation": 0.0
+      }
+    },
+    {
+      "id": "H-D",
+      "statement": "Full stack zeros H1-H4 and leaves only the schema-indistinguishable H5 residue (a tool-confusion, not a schema, failure).",
+      "pass": true,
+      "evidence": {
+        "H1_nonexistent": 0.0,
+        "H2_hallucinated_arg": 0.0,
+        "H3_type_violation": 0.0,
+        "H4_off_frontier": 0.0,
+        "H5_borrowed_signature": 0.1525
+      }
+    },
+    {
+      "id": "H-E",
+      "statement": "Full stack introduces no over-rejection of honest calls.",
+      "pass": true,
+      "evidence": {
+        "toolguard_full.honest_rejection": 0.0
+      }
+    },
+    {
+      "id": "H-F",
+      "statement": "Hallucination defense must sit before the gate (resolution zeros what the gate cannot).",
+      "pass": true,
+      "evidence": {
+        "resolution_only.H1": 0.0,
+        "racg_cguard.H1": 1.0
+      }
+    }
+  ]
+}
