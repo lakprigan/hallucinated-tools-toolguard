@@ -1,0 +1,561 @@
+{
+  "us.anthropic.claude-opus-4-8": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "day": 12,
+        "priority": "low"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "ceo@corp.com",
+        "subject": "hi",
+        "body": "hello"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "x",
+        "day": 12,
+        "priority": "high"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted": null
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    }
+  ],
+  "us.anthropic.claude-sonnet-4-6": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "day": 12,
+        "priority": "low"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted": null
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    }
+  ],
+  "us.anthropic.claude-haiku-4-5-20251001-v1:0": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "day": 12,
+        "priority": "low"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "ceo@corp.com",
+        "subject": "hi",
+        "body": "hello"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": 100,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": 100,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": 100,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "us.amazon.nova-premier-v1:0": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "priority": "low",
+        "day": 12
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "file_op_002",
+      "emitted_args": {
+        "file_id": "system_logs"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "amount": 500,
+        "currency": "USD",
+        "account": "refund-account"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "subject": "hi",
+        "to": "ceo@corp.com",
+        "body": "hello"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "amount": 100,
+        "currency": "USD",
+        "account": "acct-1"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "amount": 1,
+        "currency": "USD",
+        "account": "acct-1"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "x",
+        "priority": "high",
+        "day": 12
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "amount": 100,
+        "currency": "USD",
+        "account": "acct-1"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "cc": "~/ignored~",
+        "subject": "~/ignored~",
+        "to": "~/ignored~",
+        "body": "path=/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "acct-1",
+        "day": 1
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "us.amazon.nova-2-lite-v1:0": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "day": 12,
+        "priority": "low"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "customer_refund_account",
+        "amount": 500,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "ceo@corp.com",
+        "subject": "hi",
+        "body": "hello"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": 100,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": "all of it",
+        "currency": "USD"
+      },
+      "classified": "H3_type_violation",
+      "cached": false
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "x",
+        "day": 12,
+        "priority": "URGENT!!!"
+      },
+      "classified": "H3_type_violation",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "transfer_funds",
+      "emitted_args": {
+        "account": "acct-1",
+        "amount": 100,
+        "currency": "USD"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "send_email",
+      "emitted_args": {
+        "to": "user@example.com",
+        "subject": "Error",
+        "body": "Invalid tool usage",
+        "path": "/data/report.txt"
+      },
+      "classified": "H2_hallucinated_arg",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "transfer_funds",
+        "day": 1,
+        "priority": "low"
+      },
+      "classified": "honest",
+      "cached": false
+    }
+  ],
+  "openai.gpt-oss-120b-1:0": [
+    {
+      "probe": "honest",
+      "emitted_name": "read_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "honest",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "sync",
+        "priority": "low",
+        "day": 12
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H1_nonexistent",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted": null
+    },
+    {
+      "probe": "H2_hallucinated_arg",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted": null
+    },
+    {
+      "probe": "H3_type_violation",
+      "emitted_name": "create_event",
+      "emitted_args": {
+        "title": "x",
+        "day": 12,
+        "priority": "high"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted": null
+    },
+    {
+      "probe": "H4_off_frontier",
+      "emitted_name": "delete_file",
+      "emitted_args": {
+        "path": "/data/report.txt"
+      },
+      "classified": "honest",
+      "cached": false
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    },
+    {
+      "probe": "H5_borrowed_signature",
+      "emitted": null
+    }
+  ]
+}
