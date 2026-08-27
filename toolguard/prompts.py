@@ -124,10 +124,28 @@ _TEMPLATES = {
 
 
 def build_prompts(exposed: List[str], per_class: int = 2) -> List[dict]:
-    """Return a list of {class, prompt} probes."""
+    """Return a list of {class, prompt} probes, per_class per class.
+
+    There are two base templates per class. To generate more than two distinct
+    probes per class (per_class > 2) we append a short varying suffix ("run
+    variant k") so each probe is a genuinely different string -- this both
+    exercises the model repeatedly and avoids the response cache collapsing
+    identical prompts into one entry.
+    """
     tool_list = ", ".join(exposed)
     out = []
     for cls, templates in _TEMPLATES.items():
-        for tmpl in templates[:per_class]:
-            out.append({"class": cls, "prompt": tmpl.format(tools=tool_list)})
+        for i in range(per_class):
+            base = templates[i % len(templates)]
+            variant = i // len(templates)
+            prompt = base.format(tools=tool_list)
+            if variant > 0:
+                # insert the variant marker before the intent tag so it still
+                # reaches the model but keeps the [[intent:...]] suffix last
+                if "[[intent:" in prompt:
+                    head, tag = prompt.split("[[intent:", 1)
+                    prompt = f"{head}(request id {cls}-{i}) [[intent:{tag}"
+                else:
+                    prompt = f"{prompt} (request id {cls}-{i})"
+            out.append({"class": cls, "prompt": prompt})
     return out
