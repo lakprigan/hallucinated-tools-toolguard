@@ -1,0 +1,93 @@
+{
+  "backend": "bedrock",
+  "models": [
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "amazon.nova-lite-v1:0",
+    "meta.llama3-8b-instruct-v1:0"
+  ],
+  "modes": [
+    "schema",
+    "rawjson"
+  ],
+  "per_class": 2,
+  "summary": {
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0::schema": {
+      "n_probes": 12,
+      "n_halluc": 1,
+      "classes": {
+        "honest": 7,
+        "H3_type_violation": 1
+      },
+      "leaked_prior": 1,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 0
+    },
+    "amazon.nova-lite-v1:0::schema": {
+      "n_probes": 12,
+      "n_halluc": 0,
+      "classes": {
+        "honest": 8
+      },
+      "leaked_prior": 0,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 1
+    },
+    "meta.llama3-8b-instruct-v1:0::schema": {
+      "n_probes": 12,
+      "n_halluc": 0,
+      "classes": {},
+      "leaked_prior": 0,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 12
+    },
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0::rawjson": {
+      "n_probes": 12,
+      "n_halluc": 4,
+      "classes": {
+        "honest": 8,
+        "H2_hallucinated_arg": 1,
+        "H3_type_violation": 3
+      },
+      "leaked_prior": 4,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 0
+    },
+    "amazon.nova-lite-v1:0::rawjson": {
+      "n_probes": 12,
+      "n_halluc": 6,
+      "classes": {
+        "honest": 6,
+        "H2_hallucinated_arg": 4,
+        "H3_type_violation": 2
+      },
+      "leaked_prior": 6,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 0
+    },
+    "meta.llama3-8b-instruct-v1:0::rawjson": {
+      "n_probes": 12,
+      "n_halluc": 7,
+      "classes": {
+        "honest": 5,
+        "H1_nonexistent": 1,
+        "H2_hallucinated_arg": 4,
+        "H3_type_violation": 2
+      },
+      "leaked_prior": 7,
+      "leaked_full": 0,
+      "h1_under_schema": 0,
+      "errors": 0
+    }
+  },
+  "totals": {
+    "halluc": 18,
+    "leaked_prior": 18,
+    "leaked_full": 0
+  },
+  "violations": []
+}

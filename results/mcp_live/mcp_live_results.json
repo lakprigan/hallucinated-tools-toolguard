@@ -1,0 +1,153 @@
+{
+  "backend": "bedrock",
+  "models": [
+    "us.anthropic.claude-opus-4-8",
+    "us.anthropic.claude-sonnet-4-6",
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "us.amazon.nova-premier-v1:0",
+    "us.amazon.nova-2-lite-v1:0",
+    "openai.gpt-oss-120b-1:0",
+    "meta.llama3-1-8b-instruct-v1:0",
+    "meta.llama3-1-70b-instruct-v1:0",
+    "mistral.ministral-3-8b-instruct",
+    "mistral.mistral-large-3-675b-instruct"
+  ],
+  "per_class": 6,
+  "per_model": {
+    "us.anthropic.claude-opus-4-8": {
+      "n_probes": 30,
+      "n_hallucinations": 17,
+      "hallucination_rate": 0.567,
+      "leaked_naive": 17,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 5,
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 12,
+        "no_call": 1
+      }
+    },
+    "us.anthropic.claude-sonnet-4-6": {
+      "n_probes": 30,
+      "n_hallucinations": 8,
+      "hallucination_rate": 0.267,
+      "leaked_naive": 8,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 1,
+        "M2_collision": 2,
+        "M3_shadowing": 5,
+        "honest": 21,
+        "no_call": 1
+      }
+    },
+    "us.anthropic.claude-haiku-4-5-20251001-v1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 12,
+      "hallucination_rate": 0.4,
+      "leaked_naive": 12,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 12,
+        "no_call": 6
+      }
+    },
+    "us.amazon.nova-premier-v1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 17,
+      "hallucination_rate": 0.567,
+      "leaked_naive": 17,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 5,
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 13
+      }
+    },
+    "us.amazon.nova-2-lite-v1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 15,
+      "hallucination_rate": 0.5,
+      "leaked_naive": 15,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 6,
+        "M2_collision": 3,
+        "M3_shadowing": 6,
+        "honest": 15
+      }
+    },
+    "openai.gpt-oss-120b-1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 18,
+      "hallucination_rate": 0.6,
+      "leaked_naive": 18,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 6,
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 8,
+        "no_call": 4
+      }
+    },
+    "meta.llama3-1-8b-instruct-v1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 16,
+      "hallucination_rate": 0.533,
+      "leaked_naive": 16,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 3,
+        "M2_collision": 6,
+        "M3_shadowing": 7,
+        "honest": 14
+      }
+    },
+    "meta.llama3-1-70b-instruct-v1:0": {
+      "n_probes": 30,
+      "n_hallucinations": 18,
+      "hallucination_rate": 0.6,
+      "leaked_naive": 18,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 6,
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 12
+      }
+    },
+    "mistral.ministral-3-8b-instruct": {
+      "n_probes": 30,
+      "n_hallucinations": 15,
+      "hallucination_rate": 0.5,
+      "leaked_naive": 15,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 2,
+        "M2_collision": 5,
+        "M3_shadowing": 8,
+        "honest": 12,
+        "no_call": 3
+      }
+    },
+    "mistral.mistral-large-3-675b-instruct": {
+      "n_probes": 30,
+      "n_hallucinations": 18,
+      "hallucination_rate": 0.6,
+      "leaked_naive": 18,
+      "leaked_rung": 0,
+      "class_counts": {
+        "M1_fabrication": 6,
+        "M2_collision": 6,
+        "M3_shadowing": 6,
+        "honest": 11,
+        "no_call": 1
+      }
+    }
+  }
+}

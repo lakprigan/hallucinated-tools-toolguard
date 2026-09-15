@@ -1,0 +1,135 @@
+{
+  "config": {
+    "n_trials": 400,
+    "seed": 20260617,
+    "policy": "highest_trust",
+    "servers": {
+      "files": {
+        "trust": "FIRST_PARTY",
+        "tools": [
+          "list_dir",
+          "delete_file"
+        ]
+      },
+      "mail": {
+        "trust": "VERIFIED",
+        "tools": [
+          "send_email",
+          "read_file"
+        ]
+      },
+      "payments": {
+        "trust": "VERIFIED",
+        "tools": [
+          "transfer_funds",
+          "read_file"
+        ]
+      },
+      "community-tools": {
+        "trust": "COMMUNITY",
+        "tools": [
+          "delete_file",
+          "summarize"
+        ]
+      }
+    }
+  },
+  "classes": [
+    "M1_fabrication",
+    "M2_collision",
+    "M3_shadowing",
+    "M4_stale",
+    "M5_borrow"
+  ],
+  "attack_success": {
+    "naive_host": {
+      "M1_fabrication": 1.0,
+      "M2_collision": 1.0,
+      "M3_shadowing": 1.0,
+      "M4_stale": 1.0,
+      "M5_borrow": 1.0
+    },
+    "mcp_resolution": {
+      "M1_fabrication": 0.0,
+      "M2_collision": 0.0,
+      "M3_shadowing": 0.0,
+      "M4_stale": 0.0,
+      "M5_borrow": 0.0
+    }
+  },
+  "honest_rejection": {
+    "naive_host": 0.0,
+    "mcp_resolution": 0.0
+  },
+  "verdict_breakdown": {
+    "M1_fabrication": {
+      "reject_no_provider": 400
+    },
+    "M2_collision": {
+      "reject_ambiguous": 400
+    },
+    "M3_shadowing": {
+      "reject_shadowed": 400
+    },
+    "M4_stale": {
+      "reject_stale": 400
+    },
+    "M5_borrow": {
+      "reject_signature": 400
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "M-A",
+      "statement": "Naive MCP host executes cross-server fabrication (M1).",
+      "pass": true,
+      "evidence": {
+        "naive.M1": 1.0
+      }
+    },
+    {
+      "id": "M-B",
+      "statement": "Naive host silently resolves namespace collisions / shadowed tools (M2, M3).",
+      "pass": true,
+      "evidence": {
+        "naive.M2": 1.0,
+        "naive.M3": 1.0
+      }
+    },
+    {
+      "id": "M-C",
+      "statement": "Naive host executes stale (rug-pulled) tool definitions (M4).",
+      "pass": true,
+      "evidence": {
+        "naive.M4": 1.0
+      }
+    },
+    {
+      "id": "M-D",
+      "statement": "MCP Resolution Rung rejects fabrication, shadowing, staleness, and borrows (M1,M3,M4,M5).",
+      "pass": true,
+      "evidence": {
+        "M1_fabrication": 0.0,
+        "M3_shadowing": 0.0,
+        "M4_stale": 0.0,
+        "M5_borrow": 0.0
+      }
+    },
+    {
+      "id": "M-E",
+      "statement": "MCP Resolution Rung rejects ambiguous collisions (M2) under a closed-world policy.",
+      "pass": true,
+      "evidence": {
+        "rung.M2": 0.0
+      }
+    },
+    {
+      "id": "M-F",
+      "statement": "MCP Resolution Rung introduces no over-rejection of unambiguous honest calls.",
+      "pass": true,
+      "evidence": {
+        "rung.honest_rej": 0.0
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from toolguard.registry import build_registry
-from toolguard.llm_client import LLMClient, ToolInvocation
+from toolguard.llm_client import LLMClient, ToolInvocation, parse_rawjson_call
 from toolguard.prompts import export_toolspecs, build_prompts, contract_to_toolspec
 from real_llm_experiment import classify
 
@@ -55,6 +55,70 @@ def test_mock_backend_deterministic_and_cached():
     r2 = c.call("mock-haiku", p, tools)
     assert r2.cached  # second call served from cache
     assert [i.name for i in r1.invocations] == [i.name for i in r2.invocations]
+
+
+def test_parse_rawjson_fenced_and_plain():
+    # fenced JSON with commentary around it
+    txt = 'Sure!\n```json\n{"name": "wipe_disk", "arguments": {"target": "/"}}\n```\n'
+    invs = parse_rawjson_call(txt)
+    assert len(invs) == 1 and invs[0].name == "wipe_disk"
+    assert invs[0].args == {"target": "/"}
+    # plain object, alternate keys
+    invs2 = parse_rawjson_call('{"tool": "read_file", "args": {"path": "/x"}}')
+    assert invs2[0].name == "read_file" and invs2[0].args == {"path": "/x"}
+    # no JSON -> no call
+    assert parse_rawjson_call("I refuse to call any tool.") == []
+
+
+def test_rawjson_mode_lets_h1_survive():
+    # Under raw-JSON prompting the decoder is unconstrained, so a fabricated
+    # tool name (H1) can survive to the runtime; under schema mode it cannot.
+    reg = build_registry(100)
+    exposed = ["send_email", "delete_file", "transfer_funds", "create_event", "read_file"]
+    tools = export_toolspecs(reg, exposed)
+    c = LLMClient(backend="mock")
+    # a weak model on an H1 probe, raw-JSON mode, should sometimes fabricate
+    probes = [p for p in build_prompts(exposed, per_class=6)
+              if p["class"] == "H1_nonexistent"]
+    saw_h1 = False
+    for p in probes:
+        r = c.call("mock-llama-8b", p["prompt"], tools, mode="rawjson")
+        if r.invocations and classify(r.invocations[0], reg, set(exposed)) == "H1_nonexistent":
+            saw_h1 = True
+            break
+    assert saw_h1, "expected at least one surviving H1 under raw-JSON mode"
+    # same probes under schema mode never yield an H1 (name coerced to real tool)
+    for p in probes:
+        r = c.call("mock-llama-8b", p["prompt"], tools, mode="schema")
+        for inv in r.invocations:
+            assert classify(inv, reg, set(exposed)) != "H1_nonexistent"
+
+
+def test_smoke_check_detects_violations():
+    from smoke_test import check
+    # H1 survived under schema -> HYPOTHESIS violation
+    v = check({"m::schema": {"n_probes": 4, "n_halluc": 2, "classes": {},
+                             "leaked_prior": 2, "leaked_full": 0,
+                             "h1_under_schema": 1, "errors": 0, "transcript": []}})
+    assert any("HYPOTHESIS" in x for x in v)
+    # full stack executed a hallucination -> STRUCTURAL violation
+    v = check({"m::rawjson": {"n_probes": 4, "n_halluc": 3, "classes": {},
+                              "leaked_prior": 3, "leaked_full": 1,
+                              "h1_under_schema": 0, "errors": 0, "transcript": []}})
+    assert any("full stack EXECUTED" in x for x in v)
+    # clean case -> no violations
+    assert check({"m::rawjson": {"n_probes": 4, "n_halluc": 3, "classes": {},
+                                 "leaked_prior": 3, "leaked_full": 0,
+                                 "h1_under_schema": 0, "errors": 0, "transcript": []}}) == []
+
+
+def test_smoke_runs_against_mock():
+    from smoke_test import run_probe_set, check
+    c = LLMClient(backend="mock")
+    recs = run_probe_set(c, ["mock-haiku", "mock-llama-8b"],
+                         ["schema", "rawjson"], per_class=2)
+    assert recs and all(r["leaked_full"] == 0 for r in recs.values())
+    assert check(recs) == []
 
 
 if __name__ == "__main__":

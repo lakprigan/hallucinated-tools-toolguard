@@ -35,7 +35,7 @@ from typing import Dict, List, Set
 
 from toolguard.registry import build_registry, Registry, Risk
 from toolguard.gate import named_pipelines, ToolCall
-from toolguard.llm_client import LLMClient, ToolInvocation
+from toolguard.llm_client import LLMClient, ToolInvocation, ToolUseUnsupported
 from toolguard.prompts import export_toolspecs, build_prompts
 
 
@@ -80,32 +80,29 @@ def _state_all_authorized(reg: Registry) -> Set[str]:
     return s
 
 
-def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict:
-    per_class = per_class or int(os.environ.get("TOOLGUARD_PER_CLASS", "2"))
-    reg = build_registry(n_tools)
-    pipes = named_pipelines(reg)
-    client = LLMClient()
-    rng = random.Random(seed)
-
-    # expose a fixed real subset as the model's tool schema (include the
-    # high-risk anchors so H2/H3/H4 have realistic targets)
-    anchors = ["send_email", "delete_file", "transfer_funds", "create_event", "read_file"]
-    extra = rng.sample([n for n in reg.names() if n not in anchors], 5)
-    exposed = anchors + extra
+def run_mode(reg: Registry, pipes, client: LLMClient, exposed: List[str],
+             exposed_set: Set[str], probes: List[dict], mode: str) -> Dict[str, dict]:
+    """Run all models for a single invocation mode (schema | rawjson)."""
     tools = export_toolspecs(reg, exposed)
-    exposed_set = set(exposed)
-
-    probes = build_prompts(exposed, per_class=per_class)
-
     per_model: Dict[str, dict] = {}
     for model in client.models():
+        import sys as _sys
+        print(f"  [{mode}] {model} ...", flush=True, file=_sys.stderr)
         emitted_classes: List[str] = []
         leaks = {"racg_cguard": 0, "toolguard_full": 0}
         hallucinations = 0
         transcript = []
+        unsupported = False
         for probe in probes:
             try:
-                resp = client.call(model, probe["prompt"], tools)
+                resp = client.call(model, probe["prompt"], tools, mode=mode)
+            except ToolUseUnsupported as e:
+                # model cannot use the schema-enforced tool API at all; record
+                # once as N/A and stop probing this (model, mode) cell.
+                unsupported = True
+                transcript.append({"probe": probe["class"],
+                                   "unsupported": str(e)[:160]})
+                break
             except Exception as e:
                 emitted_classes.append("api_error")
                 transcript.append({"probe": probe["class"], "error": f"{type(e).__name__}: {str(e)[:160]}"})
@@ -123,7 +120,6 @@ def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict
             if cls == "honest":
                 continue
             hallucinations += 1
-            # build the gate context; enforce off-frontier for H4-classified calls
             visible = set(exposed)
             state = _state_all_authorized(reg)
             if cls == "H4_off_frontier":
@@ -136,6 +132,7 @@ def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict
         n = len(probes)
         per_model[model] = {
             "n_probes": n,
+            "unsupported": unsupported,
             "hallucination_rate": round(hallucinations / n, 3),
             "n_hallucinations": hallucinations,
             "leaked_prior_stack": leaks["racg_cguard"],
@@ -146,33 +143,76 @@ def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict
                              for c in sorted(set(emitted_classes))},
             "transcript": transcript,
         }
+    return per_model
+
+
+def run(n_tools: int = 100, per_class: int = None, seed: int = 20260617) -> Dict:
+    per_class = per_class or int(os.environ.get("TOOLGUARD_PER_CLASS", "2"))
+    modes_env = os.environ.get("TOOLGUARD_LLM_MODE", "both").lower()
+    if modes_env == "both":
+        modes = ["schema", "rawjson"]
+    else:
+        modes = [modes_env]
+    reg = build_registry(n_tools)
+    pipes = named_pipelines(reg)
+    client = LLMClient()
+    rng = random.Random(seed)
+
+    # expose a fixed real subset as the model's tool schema (include the
+    # high-risk anchors so H2/H3/H4 have realistic targets)
+    anchors = ["send_email", "delete_file", "transfer_funds", "create_event", "read_file"]
+    extra = rng.sample([n for n in reg.names() if n not in anchors], 5)
+    exposed = anchors + extra
+    exposed_set = set(exposed)
+
+    probes = build_prompts(exposed, per_class=per_class)
+
+    by_mode: Dict[str, Dict[str, dict]] = {}
+    for mode in modes:
+        by_mode[mode] = run_mode(reg, pipes, client, exposed, exposed_set, probes, mode)
 
     return {
         "backend": client.backend_name,
+        "modes": modes,
         "config": {"n_tools": n_tools, "per_class": per_class, "seed": seed,
                    "exposed": exposed},
         "models": client.models(),
-        "per_model": per_model,
+        "by_mode": by_mode,
     }
 
 
-def markdown_table(r: Dict) -> str:
-    rows = ["| model | halluc. rate | prior leak | full-stack leak |",
+def markdown_table(r: Dict, mode: str) -> str:
+    rows = [f"| model | halluc. rate | prior leak | full-stack leak |  ({mode})",
             "|---|---|---|---|"]
+    per_model = r["by_mode"][mode]
     for m in r["models"]:
-        d = r["per_model"][m]
+        d = per_model[m]
+        if d.get("unsupported"):
+            rows.append(f"| {m} | N/A (no tool-use) | -- | -- |")
+            continue
         rows.append(f"| {m} | {d['hallucination_rate']:.2f} "
                     f"| {d['prior_leak_rate']:.2f} | {d['full_leak_rate']:.2f} |")
     return "\n".join(rows)
 
 
+def _agg(r: Dict, mode: str):
+    per_model = r["by_mode"][mode]
+    prior = sum(per_model[m]["leaked_prior_stack"] for m in r["models"])
+    full = sum(per_model[m]["leaked_full_stack"] for m in r["models"])
+    halluc = sum(per_model[m]["n_hallucinations"] for m in r["models"])
+    return halluc, prior, full
+
+
 def main():
     os.makedirs(RESULTS, exist_ok=True)
     r = run()
+    # slim summary (drop verbose transcripts) + separate transcript file
+    slim = json.loads(json.dumps(r))
+    transcripts = {}
+    for mode in slim["modes"]:
+        transcripts[mode] = {m: slim["by_mode"][mode][m].pop("transcript")
+                             for m in slim["models"]}
     with open(os.path.join(RESULTS, "real_llm_results.json"), "w") as f:
-        # drop verbose transcripts from the summary file; keep them separately
-        slim = json.loads(json.dumps(r))
-        transcripts = {m: slim["per_model"][m].pop("transcript") for m in slim["models"]}
         json.dump(slim, f, indent=2)
     with open(os.path.join(RESULTS, "real_llm_transcripts.json"), "w") as f:
         json.dump(transcripts, f, indent=2)
@@ -180,14 +220,25 @@ def main():
     print("=" * 68)
     print(f"REAL-LLM VALIDATION TRACK  (backend = {r['backend']})")
     print("=" * 68)
-    print(markdown_table(r))
-    print()
-    prior = sum(r["per_model"][m]["leaked_prior_stack"] for m in r["models"])
-    full = sum(r["per_model"][m]["leaked_full_stack"] for m in r["models"])
-    halluc = sum(r["per_model"][m]["n_hallucinations"] for m in r["models"])
-    print(f"Across {len(r['models'])} models: {halluc} real hallucinations emitted.")
-    print(f"  prior RACG+ContractGuard stack executed : {prior}/{halluc}")
-    print(f"  full stack (with Resolution Rung) executed: {full}/{halluc}")
+    for mode in r["modes"]:
+        label = "SCHEMA-ENFORCED (Bedrock Converse toolConfig)" if mode == "schema" \
+            else "RAW-JSON (MCP-bridge / custom parser)"
+        print(f"\n--- MODE: {mode}  [{label}] ---")
+        print(markdown_table(r, mode))
+        halluc, prior, full = _agg(r, mode)
+        print(f"\nAcross {len(r['models'])} models: {halluc} real hallucinations emitted.")
+        print(f"  prior RACG+ContractGuard stack executed : {prior}/{halluc}")
+        print(f"  full stack (with Resolution Rung) executed: {full}/{halluc}")
+
+    # combined
+    th = sum(_agg(r, m)[0] for m in r["modes"])
+    tp = sum(_agg(r, m)[1] for m in r["modes"])
+    tf = sum(_agg(r, m)[2] for m in r["modes"])
+    print("\n" + "-" * 68)
+    print(f"TOTAL across {len(r['modes'])} mode(s), {len(r['models'])} models: "
+          f"{th} hallucinations")
+    print(f"  prior stack executed      : {tp}/{th}")
+    print(f"  full stack (ours) executed: {tf}/{th}")
     if r["backend"] == "mock":
         print("\n(offline mock backend; set TOOLGUARD_LLM_BACKEND=bedrock for live models)")
 
