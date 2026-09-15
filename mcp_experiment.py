@@ -190,12 +190,62 @@ def run(n_trials: int = 400, seed: int = 20260617,
         succ["mcp_resolution"][cls] = r_exec / n_trials
         verdict_breakdown[cls] = vb
 
-    # honest track (utility / over-rejection)
+    # honest track, split to expose the safety/usability tradeoff of the
+    # "reject any multi-provider flat call" policy:
+    #   (a) unambiguous: honest call to a UNIQUE-provider tool, or server-pinned.
+    #       A correct resolver must accept these (no over-rejection).
+    #   (b) benign flat collision: an honest user issues a FLAT call to a
+    #       collided name WITHOUT pinning a server. The strict resolver rejects
+    #       (forcing the user/host to disambiguate) -- this is the real usability
+    #       cost of the closed-world policy, NOT a security failure.
     naive = NaiveMCPHost(base)
     rung = MCPResolutionRung(base)
-    honest_trials = [honest(base, rng) for _ in range(n_trials)]
-    naive_rej = sum(0 if naive.check(c).allowed else 1 for c, _ in honest_trials) / n_trials
-    rung_rej = sum(0 if rung.check(c).allowed else 1 for c, _ in honest_trials) / n_trials
+
+    unambiguous = [honest(base, rng) for _ in range(n_trials)]
+    naive_rej = sum(0 if naive.check(c).allowed else 1 for c, _ in unambiguous) / n_trials
+    rung_rej = sum(0 if rung.check(c).allowed else 1 for c, _ in unambiguous) / n_trials
+
+    # benign flat-collision honest calls (same-tier collisions are benign: no
+    # trust asymmetry, so auto-picking either provider is safe)
+    same_tier = [t for t in base.flat_namespace()
+                 if len(base.providers_of(t)) > 1
+                 and len({s.trust for s in base.providers_of(t)}) == 1]
+    benign_flat = []
+    for _ in range(n_trials):
+        if not same_tier:
+            break
+        t = rng.choice(same_tier); srv = base.providers_of(t)[0].name
+        benign_flat.append((MCPCall(t, _valid_args(base, srv, t)), "benign_collision"))
+    # strict resolver rejects benign flat collisions (requires a pin)
+    strict_benign_rej = (sum(0 if rung.check(c).allowed else 1 for c, _ in benign_flat)
+                         / len(benign_flat)) if benign_flat else 0.0
+    # pin-assisted variant: for a SAME-TIER (benign) collision the host may
+    # auto-pick a provider (any is safe); it still rejects CROSS-TIER (shadow)
+    # collisions. This recovers the usability cost without reintroducing the
+    # shadow risk.
+    def pin_assisted_allows(call: MCPCall) -> bool:
+        if call.server is None:
+            provs = base.providers_of(call.flat)
+            if len(provs) > 1 and len({s.trust for s in provs}) == 1:
+                # benign same-tier collision: auto-pin to first; then signature check
+                srv = provs[0].name
+                pinned = MCPCall(call.flat, call.args, server=srv)
+                return rung.check(pinned).allowed
+        return rung.check(call).allowed
+    assisted_benign_rej = (sum(0 if pin_assisted_allows(c) else 1 for c, _ in benign_flat)
+                           / len(benign_flat)) if benign_flat else 0.0
+    # confirm pin-assisted does NOT reopen the shadow (cross-tier) hole
+    m3_trials = [m3_shadowing(base, rng) for _ in range(n_trials)]
+    assisted_m3_leak = (sum(1 if pin_assisted_allows(c) else 0 for c, _ in m3_trials)
+                        / n_trials)
+
+    honest_detail = {
+        "unambiguous_over_rejection": {"naive_host": naive_rej, "mcp_resolution": rung_rej},
+        "benign_flat_collision_over_rejection": {
+            "strict_resolver": round(strict_benign_rej, 4),
+            "pin_assisted_resolver": round(assisted_benign_rej, 4)},
+        "pin_assisted_shadow_leak_M3": round(assisted_m3_leak, 4),
+    }
 
     return {
         "config": {"n_trials": n_trials, "seed": seed, "policy": policy.value,
@@ -205,6 +255,7 @@ def run(n_trials: int = 400, seed: int = 20260617,
         "classes": classes,
         "attack_success": succ,
         "honest_rejection": {"naive_host": naive_rej, "mcp_resolution": rung_rej},
+        "honest_detail": honest_detail,
         "verdict_breakdown": verdict_breakdown,
     }
 
@@ -267,6 +318,13 @@ def main():
     print("verdict breakdown (MCP Resolution Rung):")
     for cls, vb in r["verdict_breakdown"].items():
         print(f"  {cls:16s} {vb}")
+    print()
+    hd = r["honest_detail"]
+    print("honest / usability tradeoff:")
+    print(f"  unambiguous over-rejection (resolver) : {hd['unambiguous_over_rejection']['mcp_resolution']:.2f}")
+    print(f"  benign flat-collision over-rejection  : strict={hd['benign_flat_collision_over_rejection']['strict_resolver']:.2f}"
+          f"  pin-assisted={hd['benign_flat_collision_over_rejection']['pin_assisted_resolver']:.2f}")
+    print(f"  pin-assisted M3 (shadow) leak         : {hd['pin_assisted_shadow_leak_M3']:.2f}  (must stay 0.00)")
     print()
     print("=" * 70)
     print("HYPOTHESES")

@@ -61,6 +61,17 @@
     "naive_host": 0.0,
     "mcp_resolution": 0.0
   },
+  "honest_detail": {
+    "unambiguous_over_rejection": {
+      "naive_host": 0.0,
+      "mcp_resolution": 0.0
+    },
+    "benign_flat_collision_over_rejection": {
+      "strict_resolver": 1.0,
+      "pin_assisted_resolver": 0.0
+    },
+    "pin_assisted_shadow_leak_M3": 0.0
+  },
   "verdict_breakdown": {
     "M1_fabrication": {
       "reject_no_provider": 400

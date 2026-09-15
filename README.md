@@ -16,14 +16,32 @@ A hallucinated call is never a gating decision, so it must be rejected
 method shares. The Resolution Rung closes it standalone.
 
 ## Layout
-- `toolguard/registry.py` -- contract formalism + 100-tool registry (reused from CMTF/RACG lineage).
-- `toolguard/gate.py`     -- Resolution Rung, RACG gate, ContractGuard rung, composable pipelines.
-- `toolguard/mcp.py`      -- MCP multi-server deployment, qualified (server,tool) resolver, M1-M5 classes, naive-host baseline.
-- `toolguard/attacks.py`  -- honest calls + five hallucination classes H1-H5 (synthetic track).
-- `mcp_experiment.py`     -- MCP synthetic benchmark (naive host 1.00 vs. resolver 0.00 on M1-M5) -> `results/mcp_results.json`.
-- `mcp_live_probe.py`     -- live real-model MCP-surface probe (cross-server confusion) -> `results/mcp_live_results.json`.
-- `make_mcp_figure.py`    -- MCP figure.
-- `tests/test_mcp.py`     -- 11 MCP unit tests.
+- `pyproject.toml`         -- installable package (`pip install -e .`), console script `toolguard-bench`, version 0.2.0.
+- `toolguard/registry.py`  -- contract formalism + 100-tool registry (reused from CMTF/RACG lineage).
+- `toolguard/gate.py`      -- Resolution Rung, RACG gate, ContractGuard rung, composable pipelines.
+- `toolguard/mcp.py`       -- MCP multi-server deployment, qualified (server,tool) resolver, M1-M5 classes, naive-host baseline.
+- `toolguard/bench.py`     -- **Hallucinated-Tools Benchmark (HTB)**: versioned suite + leaderboard that scores ANY resolver on H1-H5 and M1-M5. Run `toolguard-bench`.
+- `toolguard/baselines.py` -- external baselines (name-allowlist, fuzzy-name router, JSON-schema validator, first-provider/highest-trust MCP hosts) + our resolvers.
+- `toolguard/catalogs.py`  -- real/external catalogs: API-Bank/ToolBench-style registry + real MCP server manifests (filesystem/github/slack/community) with natural collisions & shadows.
+- `toolguard/attacks.py`   -- honest calls + five hallucination classes H1-H5 (synthetic track).
+- `mcp_experiment.py`      -- MCP synthetic benchmark + safety/usability tradeoff (benign-collision over-rejection, pin-assist) -> `results/mcp_results.json`.
+- `external_experiment.py` -- benchmark on real-shaped catalogs -> `results/external_results.json`.
+- `mcp_live_probe.py`      -- live real-model MCP-surface probe -> `results/mcp_live_results.json`.
+- `tests/`                 -- 38 unit tests (`test_toolguard.py`, `test_real_llm.py`, `test_mcp.py`, `test_bench.py`).
+
+## Install & run the benchmark
+```bash
+pip install -e .                 # installs the toolguard package + CLI
+toolguard-bench                  # print the HTB leaderboard (H1-H5 + M1-M5)
+toolguard-bench --json out.json  # also write leaderboard JSON
+python3 external_experiment.py   # score on real API-Bank + MCP-manifest catalogs
+```
+Add your own resolver in ~5 lines and score it:
+```python
+from toolguard import score_resolver, score_mcp_resolver
+def my_resolver(call, visible, state): ...   # return True=allow / False=reject
+print(score_resolver("my-defense", my_resolver))
+```
 - `toolguard/llm_client.py` -- provider-agnostic tool-use client: offline mock + live Bedrock (Converse), on-disk response cache.
 - `toolguard/prompts.py`  -- Contract -> Bedrock toolSpec export + adversarial prompt suite (H1-H5).
 - `experiment.py`         -- synthetic benchmark -> `results/results.json`, prints table + 6 hypotheses.

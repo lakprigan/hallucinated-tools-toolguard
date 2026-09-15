@@ -136,7 +136,8 @@
         "class_counts": {
           "H1_nonexistent": 1,
           "H2_hallucinated_arg": 13,
-          "H3_type_violation": 23,
+          "H3_type_coercible": 13,
+          "H3_type_violation": 10,
           "honest": 14,
           "no_call": 9
         }
@@ -152,7 +153,8 @@
         "full_leak_rate": 0.0,
         "class_counts": {
           "H2_hallucinated_arg": 7,
-          "H3_type_violation": 15,
+          "H3_type_coercible": 8,
+          "H3_type_violation": 7,
           "honest": 24,
           "no_call": 14
         }
@@ -160,18 +162,17 @@
       "mistral.ministral-3-8b-instruct": {
         "n_probes": 60,
         "unsupported": false,
-        "hallucination_rate": 0.283,
-        "n_hallucinations": 17,
-        "leaked_prior_stack": 17,
+        "hallucination_rate": 0.3,
+        "n_hallucinations": 18,
+        "leaked_prior_stack": 18,
         "leaked_full_stack": 0,
         "prior_leak_rate": 1.0,
         "full_leak_rate": 0.0,
         "class_counts": {
           "H1_nonexistent": 2,
-          "H2_hallucinated_arg": 8,
+          "H2_hallucinated_arg": 9,
           "H3_type_violation": 7,
-          "api_error": 20,
-          "honest": 18,
+          "honest": 37,
           "no_call": 5
         }
       },
@@ -196,16 +197,16 @@
       "us.anthropic.claude-opus-4-8": {
         "n_probes": 60,
         "unsupported": false,
-        "hallucination_rate": 0.0,
-        "n_hallucinations": 0,
-        "leaked_prior_stack": 0,
+        "hallucination_rate": 0.133,
+        "n_hallucinations": 8,
+        "leaked_prior_stack": 8,
         "leaked_full_stack": 0,
-        "prior_leak_rate": 0.0,
+        "prior_leak_rate": 1.0,
         "full_leak_rate": 0.0,
         "class_counts": {
-          "api_error": 50,
-          "honest": 3,
-          "no_call": 7
+          "H3_type_violation": 8,
+          "honest": 36,
+          "no_call": 16
         }
       },
       "us.anthropic.claude-sonnet-4-6": {

@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "toolguard"
+version = "0.2.0"
+description = "Closed-world resolution against tool hallucination in LLM agents and the Model Context Protocol (MCP), with the Hallucinated-Tools Benchmark (HTB)."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Laxmipriya Ganesh Iyer", email = "laxmipriya.iyer@ieee.org" },
+    { name = "Rahul Suresh Babu" },
+]
+keywords = [
+    "llm-agents", "ai-safety", "tool-hallucination", "function-calling",
+    "model-context-protocol", "mcp", "benchmark", "prompt-injection",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Security",
+]
+# Core library + benchmark are dependency-free (stdlib only).
+dependencies = []
+
+[project.optional-dependencies]
+# figures/plots
+viz = ["matplotlib>=3.5", "numpy>=1.21"]
+# live model probing against Amazon Bedrock
+live = ["boto3>=1.28"]
+dev = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://github.com/lakprigan/hallucinated-tools-toolguard"
+Repository = "https://github.com/lakprigan/hallucinated-tools-toolguard"
+
+[project.scripts]
+toolguard-bench = "toolguard.bench:main"
+
+[tool.setuptools]
+packages = ["toolguard"]
+
+[tool.setuptools.package-data]
+toolguard = ["py.typed"]

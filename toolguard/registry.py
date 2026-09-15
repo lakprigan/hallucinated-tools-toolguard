@@ -63,6 +63,29 @@ class ArgType:
             return isinstance(value, str) and self.enum is not None and value in self.enum
         return False
 
+    def accepts_coerced(self, value: Any) -> bool:
+        """Like accepts(), but tolerant of JSON serialization artifacts: an int
+        or bool delivered as its string form ("100", "true") is treated as
+        valid, because a lenient bridge would coerce it. Used ONLY to separate a
+        genuine type hallucination (amount="all of it") from a stringified
+        numeric (amount="100") when reporting rates -- the Resolution Rung itself
+        still uses the strict accepts()."""
+        if self.accepts(value):
+            return True
+        if self.kind == ArgKind.INT and isinstance(value, str):
+            try:
+                iv = int(value.strip())
+            except (ValueError, AttributeError):
+                return False
+            if self.lo is not None and iv < self.lo:
+                return False
+            if self.hi is not None and iv > self.hi:
+                return False
+            return True
+        if self.kind == ArgKind.BOOL and isinstance(value, str):
+            return value.strip().lower() in ("true", "false", "0", "1")
+        return False
+
 
 @dataclass(frozen=True)
 class Contract:

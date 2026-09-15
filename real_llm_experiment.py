@@ -61,10 +61,17 @@ def classify(inv: ToolInvocation, reg: Registry, exposed: Set[str]) -> str:
     for k, t in c.signature.items():
         if t.required and k not in inv.args:
             return "H2_hallucinated_arg"
-    # type / enum / range
+    # type / enum / range. Disaggregate a GENUINE type hallucination
+    # (value is wrong even after JSON coercion, e.g. amount="all of it") from a
+    # SERIALIZATION artifact (value is a stringified numeric/bool a lenient
+    # bridge would coerce, e.g. amount="100"). Both are rejected by the strict
+    # resolver; we separate them only for honest rate reporting.
     for k, v in inv.args.items():
-        if not c.signature[k].accepts(v):
-            return "H3_type_violation"
+        t = c.signature[k]
+        if not t.accepts(v):
+            if t.accepts_coerced(v):
+                return "H3_type_coercible"      # serialization artifact
+            return "H3_type_violation"           # genuine type hallucination
     # real, schema-valid: is it off the exposed frontier?
     if inv.name not in exposed:
         return "H4_off_frontier"

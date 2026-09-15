@@ -1,0 +1,143 @@
+{
+  "benchmark_version": "htb-1.0",
+  "apibank_registry": {
+    "n_tools": 15,
+    "entries": [
+      {
+        "name": "resolution+racg (ours)",
+        "attack_success": {
+          "H1_nonexistent": 0.0,
+          "H2_hallucinated_arg": 0.0,
+          "H3_type_violation": 0.0,
+          "H4_off_frontier": 0.0,
+          "H5_borrowed_signature": 0.015
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.997
+      },
+      {
+        "name": "resolution-rung (ours)",
+        "attack_success": {
+          "H1_nonexistent": 0.0,
+          "H2_hallucinated_arg": 0.0,
+          "H3_type_violation": 0.0,
+          "H4_off_frontier": 1.0,
+          "H5_borrowed_signature": 0.015
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.797
+      },
+      {
+        "name": "schema-validate",
+        "attack_success": {
+          "H1_nonexistent": 1.0,
+          "H2_hallucinated_arg": 0.0,
+          "H3_type_violation": 0.0,
+          "H4_off_frontier": 1.0,
+          "H5_borrowed_signature": 0.015
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.597
+      },
+      {
+        "name": "name-allowlist",
+        "attack_success": {
+          "H1_nonexistent": 0.0,
+          "H2_hallucinated_arg": 1.0,
+          "H3_type_violation": 1.0,
+          "H4_off_frontier": 1.0,
+          "H5_borrowed_signature": 1.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.2
+      },
+      {
+        "name": "fuzzy-name",
+        "attack_success": {
+          "H1_nonexistent": 0.305,
+          "H2_hallucinated_arg": 1.0,
+          "H3_type_violation": 1.0,
+          "H4_off_frontier": 1.0,
+          "H5_borrowed_signature": 1.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.139
+      },
+      {
+        "name": "no-defense",
+        "attack_success": {
+          "H1_nonexistent": 1.0,
+          "H2_hallucinated_arg": 1.0,
+          "H3_type_violation": 1.0,
+          "H4_off_frontier": 1.0,
+          "H5_borrowed_signature": 1.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.0
+      }
+    ]
+  },
+  "mcp_manifest": {
+    "n_servers": 4,
+    "collisions": {
+      "read_file": [
+        "filesystem",
+        "slack"
+      ],
+      "write_file": [
+        "filesystem",
+        "community-utils"
+      ]
+    },
+    "entries": [
+      {
+        "name": "mcp-resolution-rung (ours)",
+        "attack_success": {
+          "M1_fabrication": 0.0,
+          "M2_collision": 0.0,
+          "M3_shadowing": 0.0,
+          "M4_stale": 0.0,
+          "M5_borrow": 0.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 1.0
+      },
+      {
+        "name": "flat-schema",
+        "attack_success": {
+          "M1_fabrication": 0.0,
+          "M2_collision": 1.0,
+          "M3_shadowing": 1.0,
+          "M4_stale": 1.0,
+          "M5_borrow": 0.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.4
+      },
+      {
+        "name": "highest-trust",
+        "attack_success": {
+          "M1_fabrication": 0.0,
+          "M2_collision": 1.0,
+          "M3_shadowing": 1.0,
+          "M4_stale": 1.0,
+          "M5_borrow": 0.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.4
+      },
+      {
+        "name": "naive-host",
+        "attack_success": {
+          "M1_fabrication": 1.0,
+          "M2_collision": 1.0,
+          "M3_shadowing": 1.0,
+          "M4_stale": 1.0,
+          "M5_borrow": 1.0
+        },
+        "honest_rejection": 0.0,
+        "htb_score": 0.0
+      }
+    ]
+  }
+}
