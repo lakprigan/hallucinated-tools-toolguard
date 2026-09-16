@@ -44,7 +44,7 @@ def score_on_registry(reg: Registry, n_per_class=200, seed=20260617) -> Dict:
     # rebind the module-level registry the baselines close over
     baselines._REG = reg
     baselines._RUNG = baselines.ResolutionRung(reg)
-    baselines._RACG = baselines.RACGGate(reg)
+    baselines._GATE = baselines.CausalGate(reg)
     suite = (reg, probes)
     entries = [bench.score_resolver(n, r, suite) for n, r in baselines.DEFAULT_RESOLVERS]
     return {"n_tools": len(reg), "entries": sorted(entries, key=lambda d: -d["htb_score"])}

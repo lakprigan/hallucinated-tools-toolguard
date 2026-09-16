@@ -102,7 +102,7 @@ def h3_type_violation(reg: Registry, rng: random.Random) -> Tuple[ToolCall, bool
     return ToolCall(c.name, args), True, "H3_type_violation"
 
 
-# ---- H4: off-frontier real tool (RACG did not expose it this step) --------
+# ---- H4: off-frontier real tool (gate did not expose it this step) --------
 
 def h4_off_frontier(reg: Registry, rng: random.Random) -> Tuple[ToolCall, bool, str]:
     # a real HIGH-risk tool, correctly typed, but not on the causal frontier

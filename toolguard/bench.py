@@ -35,7 +35,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Set, Tuple
 
 from .registry import ArgKind, ArgType, Contract, Registry, Risk, build_registry
-from .gate import ToolCall, ResolutionRung, RACGGate, named_pipelines
+from .gate import ToolCall, ResolutionRung, CausalGate, named_pipelines
 from .mcp import (MCPCall, MCPDeployment, MCPResolutionRung, NaiveMCPHost,
                   Trust, build_deployment)
 
@@ -140,19 +140,20 @@ def _build_registry_suite(reg: Registry, n_per_class: int, seed: int) -> List[Pr
         hi = [reg.get(n) for n in names if reg.get(n).risk == Risk.HIGH]
         c = rng.choice(hi); v, s = frontier(c, off=True)
         probes.append(Probe(ToolCall(c.name, _valid_args(c)), "H4_off_frontier", True, v, s))
-        # H5 borrowed signature
-        a = reg.get(rng.choice(names)); b = reg.get(rng.choice(names))
-        while b.name == a.name:
-            b = reg.get(rng.choice(names))
-        v, s = frontier(a)
-        probes.append(Probe(ToolCall(a.name, _valid_args(b)), "H5_borrowed_signature", True, v, s))
+        # H5 borrowed signature (same construction as the controlled ablation:
+        # toolguard.attacks.h5_borrowed_signature, so the released suite and the
+        # paper's ablation estimate the identical residue quantity)
+        from toolguard.attacks import h5_borrowed_signature
+        call, _, _ = h5_borrowed_signature(reg, rng)
+        v, s = frontier(reg.get(call.name))
+        probes.append(Probe(call, "H5_borrowed_signature", True, v, s))
     return probes
 
 
 HALLUCINATION_BENCH: Dict = {
     "version": BENCHMARK_VERSION,
     "n_tools": 100,
-    "n_per_class": 200,
+    "n_per_class": 400,
     "seed": 20260617,
     "classes": ["H1_nonexistent", "H2_hallucinated_arg", "H3_type_violation",
                 "H4_off_frontier", "H5_borrowed_signature"],

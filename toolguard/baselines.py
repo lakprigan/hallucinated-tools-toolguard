@@ -13,7 +13,7 @@ so the leaderboard is a genuine comparison, not a self-scored victory lap:
     * schema-validate       -- JSON-schema type check only, but NO closed-world
                                membership (accepts unknown names if args look ok)
     * resolution-rung       -- ours (membership + full signature check)
-    * resolution+racg       -- ours + causal gate (also closes H4)
+    * resolution+gate       -- ours + causal gate (also closes H4)
 
   MCP:
     * naive-host            -- flatten + first-provider + fail-open
@@ -31,7 +31,7 @@ from __future__ import annotations
 from typing import Set
 
 from .registry import Registry, build_registry
-from .gate import ToolCall, ResolutionRung, RACGGate, named_pipelines
+from .gate import ToolCall, ResolutionRung, CausalGate, named_pipelines
 from .mcp import (MCPCall, MCPDeployment, MCPResolutionRung, NaiveMCPHost,
                   build_deployment)
 
@@ -39,7 +39,7 @@ from .mcp import (MCPCall, MCPDeployment, MCPResolutionRung, NaiveMCPHost,
 _REG = build_registry(100)
 _DEP = build_deployment()
 _RUNG = ResolutionRung(_REG)
-_RACG = RACGGate(_REG)
+_GATE = CausalGate(_REG)
 _PIPES = named_pipelines(_REG)
 _MCP_RUNG = MCPResolutionRung(_DEP)
 
@@ -107,13 +107,13 @@ def r_resolution_rung(call: ToolCall, visible: Set[str], state: Set[str]) -> boo
     return _RUNG.check(call).allowed
 
 
-def r_resolution_racg(call: ToolCall, visible: Set[str], state: Set[str]) -> bool:
+def r_resolution_gate(call: ToolCall, visible: Set[str], state: Set[str]) -> bool:
     d = _RUNG.check(call)
     if not d.allowed:
         return False
     if _REG.get(call.name) is None:
         return False
-    return _RACG.check(call, visible, state).allowed
+    return _GATE.check(call, visible, state).allowed
 
 
 DEFAULT_RESOLVERS = [
@@ -122,7 +122,7 @@ DEFAULT_RESOLVERS = [
     ("fuzzy-name", r_fuzzy_name),
     ("schema-validate", r_schema_validate),
     ("resolution-rung (ours)", r_resolution_rung),
-    ("resolution+racg (ours)", r_resolution_racg),
+    ("resolution+gate (ours)", r_resolution_gate),
 ]
 
 

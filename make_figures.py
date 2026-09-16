@@ -13,7 +13,7 @@ classes = R["classes"]
 short = [c.split("_")[0] for c in classes]
 pipes = ["no_defense", "racg_cguard", "resolution_only", "toolguard_full"]
 labels = {"no_defense": "No defense",
-          "racg_cguard": "RACG+ContractGuard\n(prior stack)",
+          "racg_cguard": "Gate + contract verify\n(gating-only stack)",
           "resolution_only": "Resolution Rung\n(ours, alone)",
           "toolguard_full": "Full stack\n(ours)"}
 
@@ -38,8 +38,8 @@ print("wrote figures/attack_success.png")
 # ---- Figure 2: the layered pipeline / where each class dies ----
 fig, ax = plt.subplots(figsize=(7.2, 2.6))
 ax.axis("off")
-stages = ["LLM call", "Rung 0\nResolution", "RACG\ncausal+auth gate",
-          "ContractGuard\nintegrity", "Execute"]
+stages = ["LLM call", "Rung 0\nResolution", "Causal\ngate",
+          "Contract\nverifier", "Execute"]
 xs = np.linspace(0.05, 0.95, len(stages))
 for i, (xx, s) in enumerate(zip(xs, stages)):
     box = "#2e4057" if s.startswith("Rung 0") else "#4a5568"

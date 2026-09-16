@@ -1,14 +1,12 @@
 """
 registry.py -- Tool contracts and a controlled 100-tool registry.
 
-This reproduces the precondition-effect contract formalism shared by the
-research program (CMTF: arXiv:2606.06284; Contract2Tool: arXiv:2606.07904;
-RACG: arXiv:2606.13884; ContractGuard: arXiv:2606.18550):
+This uses a standard precondition-effect contract formalism:
 
     tool = (name, requires R, produces E, risk rho, cost, signature)
 
-We extend each contract with a typed *signature* (argument name -> ArgType),
-which the prior papers left implicit. The signature is what makes hallucinated
+We extend each contract with a typed *signature* (argument name -> ArgType).
+The signature is what makes hallucinated
 arguments (H2), type/enum violations (H3), and borrowed signatures (H5)
 mechanically detectable.
 
@@ -99,7 +97,7 @@ class Contract:
     authorization: Optional[str] = None   # predicate gating HIGH-risk exposure
 
     def digest(self) -> str:
-        """A stable content hash -- stands in for ContractGuard signed provenance."""
+        """A stable content hash -- stands in for a contract-verifier signed provenance."""
         payload = "|".join([
             self.name,
             ",".join(sorted(self.requires)),
@@ -134,7 +132,7 @@ class Registry:
 
 # --------------------------------------------------------------------------
 # A controlled 100-tool registry over three domains (calendar / email / files)
-# mirroring the CMTF/RACG benchmark scale. Tools are procedurally generated so
+# at a representative benchmark scale. Tools are procedurally generated so
 # the registry is reproducible and the signatures are non-trivial.
 # --------------------------------------------------------------------------
 

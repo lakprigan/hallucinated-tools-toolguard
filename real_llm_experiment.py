@@ -15,9 +15,9 @@ We report, per model:
   * hallucination_rate: fraction of probes where the model emitted a
     non-honest call (H1-H5) -- i.e. how often the real model took the bait.
   * leaked_prior / leaked_full: fraction of emitted hallucinations that the
-    prior RACG+ContractGuard stack vs. our full stack still EXECUTED.
+    prior gating-only stack vs. our full stack still EXECUTED.
 
-This mirrors ContractGuard's six-model structural-validation table: the
+This follows a structural-validation table format: the
 defense's effect should hold across real models regardless of phrasing.
 
 Env:
@@ -234,7 +234,7 @@ def main():
         print(markdown_table(r, mode))
         halluc, prior, full = _agg(r, mode)
         print(f"\nAcross {len(r['models'])} models: {halluc} real hallucinations emitted.")
-        print(f"  prior RACG+ContractGuard stack executed : {prior}/{halluc}")
+        print(f"  prior gating-only stack executed : {prior}/{halluc}")
         print(f"  full stack (with Resolution Rung) executed: {full}/{halluc}")
 
     # combined

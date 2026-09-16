@@ -4,7 +4,7 @@
     "n_tools": 15,
     "entries": [
       {
-        "name": "resolution+racg (ours)",
+        "name": "resolution+gate (ours)",
         "attack_success": {
           "H1_nonexistent": 0.0,
           "H2_hallucinated_arg": 0.0,

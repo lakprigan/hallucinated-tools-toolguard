@@ -29,7 +29,7 @@ BENCHMARK_VERSION = "htb-1.0"  # Hallucinated-Tools Benchmark, dataset version
 # ---- single-registry surface --------------------------------------------
 from .registry import (ArgKind, ArgType, Contract, Registry, Risk,
                        build_registry)
-from .gate import (ResolutionRung, RACGGate, ContractGuardRung, Pipeline,
+from .gate import (ResolutionRung, CausalGate, ContractVerifierRung, Pipeline,
                    ToolCall, Verdict, Decision, named_pipelines)
 
 # ---- MCP multi-server surface --------------------------------------------
@@ -44,7 +44,7 @@ from .bench import (HALLUCINATION_BENCH, MCP_BENCH, run_leaderboard,
 __all__ = [
     "__version__", "BENCHMARK_VERSION",
     "ArgKind", "ArgType", "Contract", "Registry", "Risk", "build_registry",
-    "ResolutionRung", "RACGGate", "ContractGuardRung", "Pipeline", "ToolCall",
+    "ResolutionRung", "CausalGate", "ContractVerifierRung", "Pipeline", "ToolCall",
     "Verdict", "Decision", "named_pipelines",
     "MCPServer", "MCPDeployment", "MCPResolutionRung", "NaiveMCPHost", "MCPCall",
     "MCPDecision", "MCPVerdict", "MergePolicy", "Trust", "QualifiedName",

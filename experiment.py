@@ -1,7 +1,7 @@
 """
 experiment.py -- Runs the controlled benchmark and writes results.
 
-Setup mirrors the CMTF/RACG evaluation shape: a fixed registry, a fixed set
+Setup uses a fixed registry, a fixed set
 of visible frontiers + authorized states, and N trials per (attack class x
 pipeline). We record the attack-success rate: fraction of hallucinated /
 dangerous calls that were EXECUTED (not rejected).
@@ -35,7 +35,7 @@ def _frontier_and_state(reg, call: ToolCall, rng: random.Random) -> tuple[Set[st
     """Build the visible causal frontier + current state for a step.
 
     Honest and H1/H2/H3/H5 calls target a tool we place ON the frontier and
-    authorize, so that RACG alone would let a correctly-formed call through
+    authorize, so that the causal gate alone would let a correctly-formed call through
     (isolating the hallucination signal). H4 deliberately targets a tool that
     is NOT on the frontier (that is the whole point of H4).
     """
@@ -51,19 +51,21 @@ def _frontier_and_state(reg, call: ToolCall, rng: random.Random) -> tuple[Set[st
     return visible, state
 
 
-def _h5_residue_analysis(reg, n_trials: int, seed: int) -> Dict:
+def _h5_residue_analysis(reg, h5_trials) -> Dict:
     """Quantify the H5 leak: of the borrowed-signature calls that pass
     resolution, confirm every one is schema-indistinguishable from a VALID
     call to the target tool (i.e. the residue is a tool-confusion failure,
-    not a resolution failure)."""
-    from toolguard.attacks import h5_borrowed_signature
+    not a resolution failure).
+
+    Uses the SAME H5 trial set the ablation scored, so ``passed_resolution``
+    and the ablation's H5 attack-success rate are the same sample (one number
+    reported everywhere, no seed/sample drift)."""
     from toolguard.gate import ResolutionRung
     r = ResolutionRung(reg)
-    rng = random.Random(seed)
+    n_trials = len(h5_trials)
     passed = 0
     schema_valid = 0
-    for _ in range(n_trials):
-        call, _, _ = h5_borrowed_signature(reg, rng)
+    for call, _is_hall, _lbl in h5_trials:
         d = r.check(call)
         if d.allowed:
             passed += 1
@@ -93,10 +95,13 @@ def run(n_trials: int = 400, n_tools: int = 100, seed: int = 20260617) -> Dict:
     honest_rej: Dict[str, float] = {}
 
     # ---- attack tracks ----
+    h5_trials = None
     for cls in classes:
         gen = GENERATORS[cls]
         # generate a fixed trial set for this class (shared across pipelines)
         trials = [gen(reg, rng) for _ in range(n_trials)]
+        if cls == "H5_borrowed_signature":
+            h5_trials = trials  # reuse the exact sample for the residue analysis
         for pname, pipe in pipes.items():
             executed = 0
             for call, is_hall, _lbl in trials:
@@ -126,7 +131,7 @@ def run(n_trials: int = 400, n_tools: int = 100, seed: int = 20260617) -> Dict:
         "pipelines": list(pipes.keys()),
         "attack_success": succ,
         "honest_rejection": honest_rej,
-        "h5_residue": _h5_residue_analysis(reg, n_trials, seed),
+        "h5_residue": _h5_residue_analysis(reg, h5_trials),
     }
     return results
 
@@ -143,20 +148,20 @@ def evaluate_hypotheses(r: Dict) -> List[Dict]:
     def add(hid, statement, passed, evidence):
         H.append({"id": hid, "statement": statement, "pass": bool(passed), "evidence": evidence})
 
-    # H-A: The ContractGuard stack (racg_cguard) does NOT stop hallucinated
+    # H-A: The gating-only stack (racg_cguard) does NOT stop hallucinated
     # tools/args H1-H3,H5 -- attack success stays high. (Motivates the paper.)
     cg = succ["racg_cguard"]
     leak = {k: cg[k] for k in ("H1_nonexistent", "H2_hallucinated_arg",
                                "H3_type_violation", "H5_borrowed_signature")}
     add("H-A",
-        "Prior ContractGuard/RACG stack leaks hallucinated tools & arguments (H1-H3,H5).",
+        "Gating-only stack (gate + contract verify) leaks hallucinated tools & arguments (H1-H3,H5).",
         all(v > 0.5 for v in leak.values()),
         leak)
 
-    # H-B: RACG alone DOES stop H4 (off-frontier real tool) -- gate works for
+    # H-B: The causal gate alone DOES stop H4 (off-frontier real tool) -- gate works for
     # real tools it chose not to expose.
     add("H-B",
-        "RACG alone rejects off-frontier real tools (H4).",
+        "Causal gate alone rejects off-frontier real tools (H4).",
         succ["racg_only"]["H4_off_frontier"] == 0.0,
         {"racg_only.H4": succ["racg_only"]["H4_off_frontier"]})
 
@@ -172,7 +177,7 @@ def evaluate_hypotheses(r: Dict) -> List[Dict]:
 
     # H-D: The FULL stack drives H1-H4 to zero and reduces H5 to only its
     # schema-indistinguishable residue (borrowed args that are coincidentally
-    # valid for the target -- the CMTF tool-confusion problem, not a schema
+    # valid for the target -- the tool-confusion problem, not a schema
     # violation). No closed-world type checker can catch that residue.
     full = succ["toolguard_full"]
     add("H-D",
@@ -190,7 +195,7 @@ def evaluate_hypotheses(r: Dict) -> List[Dict]:
         {"toolguard_full.honest_rejection": hrej["toolguard_full"]})
 
     # H-F: Resolution must precede the gate: resolution_only already zeros
-    # H1-H3,H5, whereas adding RACG WITHOUT resolution (racg_cguard) does not.
+    # H1-H3,H5, whereas adding the gate WITHOUT resolution (racg_cguard) does not.
     add("H-F",
         "Hallucination defense must sit before the gate (resolution zeros what the gate cannot).",
         (succ["resolution_only"]["H1_nonexistent"] == 0.0

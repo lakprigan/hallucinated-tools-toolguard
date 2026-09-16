@@ -10,23 +10,24 @@ Layers (in the order a call passes through them):
           arguments, missing required arguments, and type/enum violations are
           rejected here. This is where hallucinated tools/args die.
 
-  RACG    CAUSAL + ADMISSIBILITY GATE (arXiv:2606.13884)
-          Given the *visible* tool set for the current step, RACG exposes a
+  GATE    CAUSAL + ADMISSIBILITY GATE
+          Given the *visible* tool set for the current step, the gate exposes a
           high-risk tool only if it is (i) on a minimal causal path and
           (ii) authorized in the current state. A call to a real tool that
-          RACG did not expose this step is an "off-frontier" call (H4).
+          the gate did not expose this step is an "off-frontier" call (H4).
 
-  CGuard  CONTRACT INTEGRITY (arXiv:2606.18550)
-          ContractGuard's rungs verify the *contract* is untampered:
+  CVerify CONTRACT INTEGRITY
+          A contract verifier's rungs verify the *contract* is untampered:
           signed provenance + typed attestation + runtime effect check.
           Assumes the referenced tool exists -- which is exactly why it
           cannot catch H1/H2 on its own.
 
 The key structural claim of the paper: hallucination defense MUST sit at
-Rung 0, strictly before RACG. RACG can only gate what is in the visible set;
-a hallucinated call is, by definition, not something RACG chose to expose,
-so RACG never sees it as a gating decision. Symmetric to ContractGuard's
-result that the runtime effect check must sit strictly AFTER the gate.
+Rung 0, strictly before the gate. The gate can only gate what is in the visible
+set; a hallucinated call is, by definition, not something the gate chose to
+expose, so the gate never sees it as a gating decision. Symmetric to the
+contract-verifier result that the runtime effect check must sit strictly AFTER
+the gate.
 """
 
 from __future__ import annotations
@@ -44,8 +45,8 @@ class Verdict(Enum):
     REJECT_UNDECLARED_ARG = "reject_undeclared"  # H2: arg not in signature
     REJECT_MISSING_ARG = "reject_missing"        # H2: required arg absent
     REJECT_TYPE = "reject_type"                  # H3/H5: type/enum/range violation
-    REJECT_OFF_FRONTIER = "reject_off_frontier"  # H4: real tool RACG didn't expose
-    REJECT_UNAUTHORIZED = "reject_unauthorized"  # RACG: high-risk w/o authorization
+    REJECT_OFF_FRONTIER = "reject_off_frontier"  # H4: real tool the gate didn't expose
+    REJECT_UNAUTHORIZED = "reject_unauthorized"  # gate: high-risk w/o authorization
 
 
 @dataclass
@@ -107,15 +108,15 @@ class ResolutionRung:
 
 
 # --------------------------------------------------------------------------
-# RACG gate (least-privilege causal + admissibility gating)
+# Causal gate (least-privilege causal + admissibility gating)
 # --------------------------------------------------------------------------
 
-class RACGGate:
+class CausalGate:
     """Exposes a high-risk tool only if on the causal frontier AND authorized.
 
-    'visible' is the set of tool names RACG chose to expose at this step
+    'visible' is the set of tool names the gate chose to expose at this step
     (the causal frontier). A call whose tool is real but NOT in 'visible' is
-    an off-frontier call (H4) -- RACG rejects it as unexposed capability.
+    an off-frontier call (H4) -- the gate rejects it as unexposed capability.
     """
 
     def __init__(self, registry: Registry):
@@ -135,15 +136,15 @@ class RACGGate:
 
 
 # --------------------------------------------------------------------------
-# ContractGuard rung (contract-integrity check; here: provenance digest match)
+# Contract-verifier rung (contract-integrity check; here: provenance digest match)
 # --------------------------------------------------------------------------
 
-class ContractGuardRung:
+class ContractVerifierRung:
     """Verifies the contract the gate read matches the trusted attestation root.
 
-    We model ContractGuard's three rungs with a single provenance-digest check:
+    We model contract integrity with a single provenance-digest check:
     the contract presented at gate time must hash to the trusted digest. This
-    catches corrupted contracts (the ContractGuard threat model) but, crucially,
+    catches corrupted contracts (the contract-verifier threat model) but, crucially,
     is a no-op against hallucinated *calls*, because a hallucinated tool has no
     trusted contract to compare against -- it never reaches this rung.
     """
@@ -173,8 +174,8 @@ class Pipeline:
         self.use_racg = use_racg
         self.use_cguard = use_cguard
         self.rung0 = ResolutionRung(registry)
-        self.racg = RACGGate(registry)
-        self.cguard = ContractGuardRung({n: registry.get(n).digest() for n in registry.names()})
+        self.gate = CausalGate(registry)
+        self.verifier = ContractVerifierRung({n: registry.get(n).digest() for n in registry.names()})
 
     def decide(self, call: ToolCall, visible: Set[str], state: Set[str]) -> Decision:
         # Rung 0 first: hallucination defense before the gate.
@@ -182,25 +183,25 @@ class Pipeline:
             d = self.rung0.check(call)
             if not d.allowed:
                 return d
-        # If resolution is OFF, a hallucinated call may slip through to RACG,
+        # If resolution is OFF, a hallucinated call may slip through to the gate,
         # which can only reason about registered/visible tools. We emulate the
-        # documented failure: unknown tools that RACG cannot gate are executed.
+        # documented failure: unknown tools the gate cannot gate are executed.
         if self.use_racg:
-            # RACG needs a real contract; if none exists and resolution was off,
-            # RACG cannot gate it -> the call escapes (models the vulnerability).
+            # the gate needs a real contract; if none exists and resolution was off,
+            # the gate cannot gate it -> the call escapes (models the vulnerability).
             if self.reg.get(call.name) is None:
                 return Decision(Verdict.ALLOW, "racg",
                                 "unresolved call escapes gate (no resolution rung)")
-            d = self.racg.check(call, visible, state)
+            d = self.gate.check(call, visible, state)
             if not d.allowed:
                 return d
         if self.use_cguard:
             contract = self.reg.get(call.name)
             if contract is None:
-                # ContractGuard has nothing to verify; call escapes.
+                # the verifier has nothing to verify; call escapes.
                 return Decision(Verdict.ALLOW, "cguard",
                                 "no contract to verify (hallucinated tool)")
-            d = self.cguard.check(call, contract)
+            d = self.verifier.check(call, contract)
             if not d.allowed:
                 return d
         return Decision(Verdict.ALLOW, "final")
@@ -211,7 +212,7 @@ def named_pipelines(registry: Registry) -> Dict[str, Pipeline]:
     return {
         "no_defense":        Pipeline(registry, False, False, False),
         "racg_only":         Pipeline(registry, False, True, False),
-        "racg_cguard":       Pipeline(registry, False, True, True),   # ContractGuard stack
+        "racg_cguard":       Pipeline(registry, False, True, True),   # gate + contract-verifier stack
         "resolution_only":   Pipeline(registry, True, False, False),
         "toolguard_full":    Pipeline(registry, True, True, True),    # this paper
     }

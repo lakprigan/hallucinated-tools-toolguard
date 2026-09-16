@@ -7,8 +7,7 @@ real tool. This adds a training-free, closed-world **Resolution Rung**
 that rejects fabricated tools and hallucinated arguments using only the
 tool registry the agent already has. It runs in front of *any*
 function-calling agent and composes with (but does not depend on)
-downstream gating layers such as RACG (arXiv:2606.13884) and
-ContractGuard (arXiv:2606.18550).
+downstream causal-gating and contract-verification layers.
 
 ## Contribution in one line
 A hallucinated call is never a gating decision, so it must be rejected
@@ -17,8 +16,8 @@ method shares. The Resolution Rung closes it standalone.
 
 ## Layout
 - `pyproject.toml`         -- installable package (`pip install -e .`), console script `toolguard-bench`, version 0.2.0.
-- `toolguard/registry.py`  -- contract formalism + 100-tool registry (reused from CMTF/RACG lineage).
-- `toolguard/gate.py`      -- Resolution Rung, RACG gate, ContractGuard rung, composable pipelines.
+- `toolguard/registry.py`  -- contract formalism + 100-tool registry.
+- `toolguard/gate.py`      -- Resolution Rung, causal gate, contract-verifier rung, composable pipelines.
 - `toolguard/mcp.py`       -- MCP multi-server deployment, qualified (server,tool) resolver, M1-M5 classes, naive-host baseline.
 - `toolguard/bench.py`     -- **Hallucinated-Tools Benchmark (HTB)**: versioned suite + leaderboard that scores ANY resolver on H1-H5 and M1-M5. Run `toolguard-bench`.
 - `toolguard/baselines.py` -- external baselines (name-allowlist, fuzzy-name router, JSON-schema validator, first-provider/highest-trust MCP hosts) + our resolvers.
@@ -111,31 +110,36 @@ export TOOLGUARD_LLM_MODE=both       # schema | rawjson | both
 export TOOLGUARD_PER_CLASS=10        # probes per class per model
 python3 real_llm_experiment.py
 ```
-Every model response is cached under `results/llm_cache/`, so re-runs are free
-and the transcripts (`results/real_llm_transcripts.json`) are a reproducible
-exhibit.
+When a response cache is enabled (`results/llm_cache/`), re-runs are free; note
+that the cache is not committed to this repo (re-running requires Bedrock
+access). The committed exhibit is the **classified** transcript
+(`results/real_llm_transcripts.json`): each emitted call with its parsed name,
+arguments, and H1–H5 label, so every classification decision is auditable. The
+raw provider response envelopes are not committed.
 
 Live Bedrock result (10 models × 2 surfaces, per_class=10): fabricated tools
 (H1) concentrate on the raw-JSON surface (34 vs. 3 under schema, the three
 slipping schema only on the weakest open-weight models); open-weight models
 hallucinate up to 62% and model scale does not help (a 675B model matches a
-7-8B one on raw-JSON). Across **313** emitted hallucinations the gating-only
-stack executes **313/313** and the full stack with the Resolution Rung executes
-**0/313** — the structural result holds at scale, on the calls real models
-actually emit. (An offline deterministic mock reproduces the same structure with
-no keys, for CI; it is a calibrated stress-test, not the headline.)
+7-8B one on raw-JSON). We **measure 322** genuine hallucinations; under a
+fail-open gating-only stack all execute by construction (**322/322**) and the
+full stack with the Resolution Rung executes **0/322** — the structural result
+holds at scale, on the calls real models actually emit. (An offline
+deterministic mock reproduces the same structure with no keys, for CI; it is a
+calibrated stress-test, not the headline.)
 
 
 ## Headline result (attack success rate; 0.00 = fully defended)
 | Pipeline | H1 | H2 | H3 | H4 | H5 | honest-rej |
 |---|---|---|---|---|---|---|
-| Gating-only (RACG+ContractGuard) | 1.00 | 1.00 | 1.00 | 0.00 | 1.00 | 0.00 |
+| Gating-only (gate + contract verify) | 1.00 | 1.00 | 1.00 | 0.00 | 1.00 | 0.00 |
 | Full stack (ours) | 0.00 | 0.00 | 0.00 | 0.00 | 0.15 | 0.00 |
 
 **Gating-only pipelines execute 100% of fabricated tools and invalid
 arguments; the Resolution Rung drives every schema-detectable class to
-0.00 with zero honest over-rejection.**
+0.00 with zero honest over-rejection.** (The 1.00 cells are by-construction
+fail-open outcomes, not measured leaks; the measured quantity is the count of
+emitted hallucinations.)
 
-The 0.15 H5 residue is provably schema-valid (66/66) — a tool-confusion
-problem for tool-selection methods such as causal minimal tool filtering
-(CMTF, arXiv:2606.06284), not a resolution failure.
+The 0.15 H5 residue is provably schema-valid (61/61) — a tool-confusion
+problem for tool-selection methods, not a resolution failure.

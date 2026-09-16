@@ -2,16 +2,16 @@
   "benchmark_version": "htb-1.0",
   "single_registry": [
     {
-      "name": "resolution+racg (ours)",
+      "name": "resolution+gate (ours)",
       "attack_success": {
         "H1_nonexistent": 0.0,
         "H2_hallucinated_arg": 0.0,
         "H3_type_violation": 0.0,
         "H4_off_frontier": 0.0,
-        "H5_borrowed_signature": 0.195
+        "H5_borrowed_signature": 0.1925
       },
       "honest_rejection": 0.0,
-      "htb_score": 0.961
+      "htb_score": 0.9615
     },
     {
       "name": "resolution-rung (ours)",
@@ -20,10 +20,10 @@
         "H2_hallucinated_arg": 0.0,
         "H3_type_violation": 0.0,
         "H4_off_frontier": 1.0,
-        "H5_borrowed_signature": 0.195
+        "H5_borrowed_signature": 0.1925
       },
       "honest_rejection": 0.0,
-      "htb_score": 0.761
+      "htb_score": 0.7615
     },
     {
       "name": "schema-validate",
@@ -32,10 +32,10 @@
         "H2_hallucinated_arg": 0.0,
         "H3_type_violation": 0.0,
         "H4_off_frontier": 1.0,
-        "H5_borrowed_signature": 0.195
+        "H5_borrowed_signature": 0.1925
       },
       "honest_rejection": 0.0,
-      "htb_score": 0.561
+      "htb_score": 0.5615
     },
     {
       "name": "name-allowlist",
@@ -52,14 +52,14 @@
     {
       "name": "fuzzy-name",
       "attack_success": {
-        "H1_nonexistent": 0.34,
+        "H1_nonexistent": 0.33,
         "H2_hallucinated_arg": 1.0,
         "H3_type_violation": 1.0,
         "H4_off_frontier": 1.0,
         "H5_borrowed_signature": 1.0
       },
       "honest_rejection": 0.0,
-      "htb_score": 0.132
+      "htb_score": 0.134
     },
     {
       "name": "no-defense",

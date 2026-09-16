@@ -64,15 +64,15 @@
     "toolguard_full": 0.0
   },
   "h5_residue": {
-    "passed_resolution": 66,
-    "of_which_schema_valid": 66,
-    "residue_rate": 0.165,
+    "passed_resolution": 61,
+    "of_which_schema_valid": 61,
+    "residue_rate": 0.1525,
     "residue_is_all_schema_valid": true
   },
   "hypotheses": [
     {
       "id": "H-A",
-      "statement": "Prior ContractGuard/RACG stack leaks hallucinated tools & arguments (H1-H3,H5).",
+      "statement": "Gating-only stack (gate + contract verify) leaks hallucinated tools & arguments (H1-H3,H5).",
       "pass": true,
       "evidence": {
         "H1_nonexistent": 1.0,
@@ -83,7 +83,7 @@
     },
     {
       "id": "H-B",
-      "statement": "RACG alone rejects off-frontier real tools (H4).",
+      "statement": "Causal gate alone rejects off-frontier real tools (H4).",
       "pass": true,
       "evidence": {
         "racg_only.H4": 0.0

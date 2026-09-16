@@ -3,7 +3,7 @@ import os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from toolguard.registry import build_registry, Risk
-from toolguard.gate import (ResolutionRung, RACGGate, ToolCall, Verdict,
+from toolguard.gate import (ResolutionRung, CausalGate, ToolCall, Verdict,
                             named_pipelines)
 
 
@@ -45,18 +45,18 @@ def test_resolution_allows_valid():
     assert d.allowed
 
 
-def test_racg_rejects_off_frontier():
+def test_causal_gate_rejects_off_frontier():
     reg = build_registry(100)
-    g = RACGGate(reg)
+    g = CausalGate(reg)
     d = g.check(ToolCall("transfer_funds",
                          {"account": "a", "amount": 1, "currency": "USD"}),
                 visible={"read_file"}, state={"payment_authorized"})
     assert d.verdict == Verdict.REJECT_OFF_FRONTIER
 
 
-def test_racg_rejects_unauthorized():
+def test_causal_gate_rejects_unauthorized():
     reg = build_registry(100)
-    g = RACGGate(reg)
+    g = CausalGate(reg)
     d = g.check(ToolCall("transfer_funds",
                          {"account": "a", "amount": 1, "currency": "USD"}),
                 visible={"transfer_funds"}, state=set())
